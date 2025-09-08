@@ -1,14 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import type { OllamaRequest, OllamaResponse, ChatAPIResponse, ChatAPIError } from '@/types/chat'
 
 const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434'
 
-export async function POST(request) {
+export async function POST(request: NextRequest): Promise<NextResponse<ChatAPIResponse | ChatAPIError>> {
   try {
-    const { message, model = 'llama2' } = await request.json()
+    const { message, model = 'llama2' }: OllamaRequest = await request.json()
 
-    if (!message) {
+    if (!message || typeof message !== 'string') {
       return NextResponse.json(
-        { error: 'Message is required' },
+        { error: 'Message is required and must be a string' },
         { status: 400 }
       )
     }
@@ -29,12 +30,12 @@ export async function POST(request) {
       const errorText = await response.text()
       console.error('Ollama API error:', errorText)
       return NextResponse.json(
-        { error: 'Failed to get response from Ollama' },
+        { error: `Failed to get response from Ollama: ${response.statusText}` },
         { status: response.status }
       )
     }
 
-    const data = await response.json()
+    const data: OllamaResponse = await response.json()
     
     return NextResponse.json({
       response: data.response,
@@ -44,8 +45,9 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Chat API error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Internal server error: ${errorMessage}` },
       { status: 500 }
     )
   }

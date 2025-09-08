@@ -1,7 +1,12 @@
 'use client'
-import { useState } from 'react'
+import { useState, FormEvent } from 'react'
 
-const COMMON_MODELS = [
+interface ModelSelectorProps {
+  selectedModel: string;
+  onModelChange: (model: string) => void;
+}
+
+const COMMON_MODELS: string[] = [
   'llama2',
   'llama2:13b',
   'codellama',
@@ -10,17 +15,17 @@ const COMMON_MODELS = [
   'starling-lm',
 ]
 
-export default function ModelSelector({ selectedModel, onModelChange }) {
-  const [customModel, setCustomModel] = useState('')
-  const [showCustomInput, setShowCustomInput] = useState(false)
+export default function ModelSelector({ selectedModel, onModelChange }: ModelSelectorProps) {
+  const [customModel, setCustomModel] = useState<string>('')
+  const [showCustomInput, setShowCustomInput] = useState<boolean>(false)
 
-  const handleModelSelect = (model) => {
+  const handleModelSelect = (model: string) => {
     onModelChange(model)
     setShowCustomInput(false)
     setCustomModel('')
   }
 
-  const handleCustomSubmit = (e) => {
+  const handleCustomSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (customModel.trim()) {
       onModelChange(customModel.trim())
@@ -38,6 +43,7 @@ export default function ModelSelector({ selectedModel, onModelChange }) {
           <button
             key={model}
             onClick={() => handleModelSelect(model)}
+            type="button"
             className={`px-3 py-1 text-sm rounded-full border transition-colors ${
               selectedModel === model
                 ? 'bg-blue-600 text-white border-blue-600'
@@ -50,6 +56,7 @@ export default function ModelSelector({ selectedModel, onModelChange }) {
         
         <button
           onClick={() => setShowCustomInput(!showCustomInput)}
+          type="button"
           className="px-3 py-1 text-sm rounded-full border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
         >
           Custom
@@ -76,3 +83,4 @@ export default function ModelSelector({ selectedModel, onModelChange }) {
     </div>
   )
 }
+

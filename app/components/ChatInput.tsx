@@ -1,11 +1,16 @@
 'use client'
-import { useState } from 'react'
+import { useState, FormEvent, KeyboardEvent } from 'react'
 import { Send, Loader2 } from 'lucide-react'
 
-export default function ChatInput({ onSendMessage, isLoading }) {
-  const [message, setMessage] = useState('')
+interface ChatInputProps {
+  onSendMessage: (message: string) => void;
+  isLoading: boolean;
+}
 
-  const handleSubmit = (e) => {
+export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
+  const [message, setMessage] = useState<string>('')
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (message.trim() && !isLoading) {
       onSendMessage(message.trim())
@@ -13,10 +18,14 @@ export default function ChatInput({ onSendMessage, isLoading }) {
     }
   }
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSubmit(e)
+      // Create a synthetic form event
+      const syntheticEvent = {
+        preventDefault: () => {},
+      } as FormEvent<HTMLFormElement>
+      handleSubmit(syntheticEvent)
     }
   }
 
@@ -44,4 +53,3 @@ export default function ChatInput({ onSendMessage, isLoading }) {
     </form>
   )
 }
-

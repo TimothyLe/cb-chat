@@ -3,13 +3,14 @@ import { useState, useRef, useEffect } from 'react'
 import ChatMessage from './components/ChatMessage'
 import ChatInput from './components/ChatInput'
 import ModelSelector from './components/ModelSelector'
+import type { Message, ChatAPIResponse, ChatAPIError } from '@/types/chat'
 
 export default function Home() {
-  const [messages, setMessages] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedModel, setSelectedModel] = useState('llama2')
-  const [error, setError] = useState(null)
-  const messagesEndRef = useRef(null)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [selectedModel, setSelectedModel] = useState<string>('llama2')
+  const [error, setError] = useState<string | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -19,8 +20,12 @@ export default function Home() {
     scrollToBottom()
   }, [messages])
 
-  const sendMessage = async (message) => {
-    const newUserMessage = { text: message, isUser: true, id: Date.now() }
+  const sendMessage = async (message: string): Promise<void> => {
+    const newUserMessage: Message = { 
+      text: message, 
+      isUser: true, 
+      id: Date.now() 
+    }
     setMessages(prev => [...prev, newUserMessage])
     setIsLoading(true)
     setError(null)
@@ -37,36 +42,39 @@ export default function Home() {
         }),
       })
 
-      const data = await response.json()
+      const data: ChatAPIResponse | ChatAPIError = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to get response')
+        throw new Error((data as ChatAPIError).error || 'Failed to get response')
       }
 
-      const assistantMessage = {
-        text: data.response,
+      const responseData = data as ChatAPIResponse
+      const assistantMessage: Message = {
+        text: responseData.response,
         isUser: false,
         id: Date.now() + 1,
-        model: data.model,
+        model: responseData.model,
+        created_at: responseData.created_at,
       }
 
       setMessages(prev => [...prev, assistantMessage])
     } catch (err) {
       console.error('Error sending message:', err)
-      setError(err.message)
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
+      setError(errorMessage)
       
-      const errorMessage = {
-        text: `Error: ${err.message}. Please make sure Ollama is running and the model "${selectedModel}" is available.`,
+      const errorMessageObj: Message = {
+        text: `Error: ${errorMessage}. Please make sure Ollama is running and the model "${selectedModel}" is available.`,
         isUser: false,
         id: Date.now() + 1,
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages(prev => [...prev, errorMessageObj])
     } finally {
       setIsLoading(false)
     }
   }
 
-  const clearChat = () => {
+  const clearChat = (): void => {
     setMessages([])
     setError(null)
   }
@@ -79,6 +87,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-gray-900">Ollama Chatbot</h1>
           <button
             onClick={clearChat}
+            type="button"
             className="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
           >
             Clear Chat
@@ -134,4 +143,3 @@ export default function Home() {
     </div>
   )
 }
-

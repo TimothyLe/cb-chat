@@ -1,6 +1,11 @@
 import { User, Bot } from 'lucide-react'
 
-export default function ChatMessage({ message, isUser }) {
+interface ChatMessageProps {
+  message: string;
+  isUser: boolean;
+}
+
+export default function ChatMessage({ message, isUser }: ChatMessageProps) {
   return (
     <div className={`flex gap-3 p-4 chat-message ${isUser ? 'bg-blue-50' : 'bg-gray-50'}`}>
       <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
