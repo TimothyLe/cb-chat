@@ -5,7 +5,7 @@ const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434'
 
 export async function POST(request: NextRequest): Promise<NextResponse<ChatAPIResponse | ChatAPIError>> {
   try {
-    const { message, model = 'llama2' }: OllamaRequest = await request.json()
+    const { message, model = 'hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF' }: OllamaRequest = await request.json()
 
     if (!message || typeof message !== 'string') {
       return NextResponse.json(

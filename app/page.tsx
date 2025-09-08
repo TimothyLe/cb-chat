@@ -8,7 +8,7 @@ import type { Message, ChatAPIResponse, ChatAPIError } from '@/types/chat'
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [selectedModel, setSelectedModel] = useState<string>('llama2')
+  const [selectedModel, setSelectedModel] = useState<string>('hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF')
   const [error, setError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -84,7 +84,7 @@ export default function Home() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Ollama Chatbot</h1>
+          <h1 className="text-2xl font-bold text-gray-900">ContextBuddy Chat</h1>
           <button
             onClick={clearChat}
             type="button"
@@ -108,7 +108,7 @@ export default function Home() {
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full text-gray-500">
             <div className="text-center">
-              <h2 className="text-xl font-semibold mb-2">Welcome to Ollama Chatbot</h2>
+              <h2 className="text-xl font-semibold mb-2">Welcome to ContextBuddy Chat</h2>
               <p>Start a conversation by typing a message below.</p>
               <p className="text-sm mt-2">Current model: <span className="font-mono">{selectedModel}</span></p>
             </div>
