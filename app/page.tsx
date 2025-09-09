@@ -4,6 +4,7 @@ import ChatMessage from './components/ChatMessage'
 import ChatInput from './components/ChatInput'
 import ModelSelector from './components/ModelSelector'
 import type { Message, ChatAPIResponse, ChatAPIError } from '@/types/chat'
+import ChatInterface from '@/components/ChatInterface';
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -141,5 +142,13 @@ export default function Home() {
         </div>
       )}
     </div>
+    <main className="min-h-screen bg-gray-50">
+      <div className="container mx-auto py-8">
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+          Assistant
+        </h1>
+        <ChatInterface />
+      </div>
+    </main>
   )
 }
